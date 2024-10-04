@@ -22,6 +22,22 @@ final Map<String, FluttermojiPropertyItem> fluttermojiProperties = {
   "skinColor": FluttermojiPropertyItem(title: "Skin", property: SkinColor),
 };
 
+/// Indices of premium options for each attribute
+final Map<String, List<int>> fluttermojiPremiumOptions = {
+  "style": [],
+  "topType": [1, 3, 5], // Indices of premium hair styles
+  "accessoriesType": [2, 4], // Indices of premium accessories
+  "hairColor": [6, 7, 8], // Indices of premium hair colors
+  "facialHairType": [2, 3, 4], // Indices of premium facial hair
+  "facialHairColor": [5, 6, 7], // Indices of premium facial hair colors
+  "clotheType": [5, 6, 7], // Indices of premium clothes
+  "clotheColor": [12, 13, 14], // Indices of premium clothing colors
+  "eyeType": [9, 10, 11], // Indices of premium eye types
+  "eyebrowType": [9, 10, 11], // Indices of premium eyebrow types
+  "mouthType": [9, 10, 11], // Indices of premium mouth types
+  "skinColor": [5, 6], // Indices of premium skin colors
+};
+
 /// Models the metadata needed for rendering widgets in the UI
 ///
 /// 'ExpandedFluttermojiCardItem' has been renamed to Attribute Item

@@ -23,9 +23,10 @@ class FluttermojiCustomizer extends StatefulWidget {
   /// Accepts optional [scaffoldHeight] and [scaffoldWidth] attributes
   /// to override the default layout.
   ///
-  ///*****
-  ///Note: \
-  /// It is advised that a [FluttermojiCircleAvatar] also be present in the same page.
+  /// You can set [premiumActive] to `true` to allow selection of premium items.
+  ///
+  /// Note:
+  /// It is advised that a [FluttermojiCircleAvatar] also be present in the same page
   /// to show the user a preview of the changes being made.
   FluttermojiCustomizer({
     Key? key,
@@ -35,6 +36,7 @@ class FluttermojiCustomizer extends StatefulWidget {
     List<String>? attributeTitles,
     List<String>? attributeIcons,
     this.autosave = true,
+    this.premiumActive = false, // Default to false
   })  : assert(
           attributeTitles == null || attributeTitles.length == attributesCount,
           "List of Attribute Titles must be of length $attributesCount.\n"
@@ -84,6 +86,9 @@ class FluttermojiCustomizer extends StatefulWidget {
   /// If set to `false` you may want to implement a [FluttermojiSaveWidget]
   /// in your app to let users save their selection manually.
   final bool autosave;
+
+  /// Indicates whether premium features are active.
+  final bool premiumActive;
 
   static const int attributesCount = 11;
 
@@ -251,6 +256,10 @@ class _FluttermojiCustomizerState extends State<FluttermojiCustomizer>
 
       int? i = fluttermojiController.selectedOptions[attribute.key];
 
+      // Retrieve the indices of premium options for this attribute
+      List<int>? premiumOptionIndices =
+          fluttermojiPremiumOptions[attribute.key];
+
       /// Build the main Tile Grid with all the options from the attribute
       var _tileGrid = GridView.builder(
         physics: widget.theme.scrollPhysics,
@@ -260,24 +269,45 @@ class _FluttermojiCustomizerState extends State<FluttermojiCustomizer>
           crossAxisSpacing: 4.0,
           mainAxisSpacing: 4.0,
         ),
-        itemBuilder: (BuildContext context, int index) => InkWell(
-          onTap: () => onTapOption(index, i, attribute),
-          child: Container(
-            decoration: index == i
-                ? widget.theme.selectedTileDecoration
-                : widget.theme.unselectedTileDecoration,
-            margin: widget.theme.tileMargin,
-            padding: widget.theme.tilePadding,
-            child: SvgPicture.string(
-              fluttermojiController.getComponentSVG(attribute.key, index),
-              height: 20,
-              semanticsLabel: 'Your Fluttermoji',
-              placeholderBuilder: (context) => Center(
-                child: CupertinoActivityIndicator(),
+        itemBuilder: (BuildContext context, int index) {
+          // Check if the option is premium
+          bool isPremiumOption = premiumOptionIndices?.contains(index) ?? false;
+          bool isOptionSelectable = !isPremiumOption || widget.premiumActive;
+
+          return InkWell(
+            onTap: isOptionSelectable
+                ? () => onTapOption(index, i, attribute)
+                : null,
+            child: Container(
+              decoration: index == i
+                  ? widget.theme.selectedTileDecoration
+                  : widget.theme.unselectedTileDecoration,
+              margin: widget.theme.tileMargin,
+              padding: widget.theme.tilePadding,
+              child: Stack(
+                children: [
+                  SvgPicture.string(
+                    fluttermojiController.getComponentSVG(attribute.key, index),
+                    height: 20,
+                    semanticsLabel: 'Your Fluttermoji',
+                    placeholderBuilder: (context) => Center(
+                      child: CupertinoActivityIndicator(),
+                    ),
+                  ),
+                  if (!isOptionSelectable)
+                    Positioned.fill(
+                      child: Container(
+                        color: Colors.grey.withOpacity(0.5),
+                        child: Center(
+                          child: Icon(Icons.lock, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
-          ),
-        ),
+          );
+        },
       );
 
       /// Builds the icon for the attribute to be placed in the bottom row
