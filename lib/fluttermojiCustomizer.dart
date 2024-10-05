@@ -286,12 +286,15 @@ class _FluttermojiCustomizerState extends State<FluttermojiCustomizer>
               padding: widget.theme.tilePadding,
               child: Stack(
                 children: [
-                  SvgPicture.string(
-                    fluttermojiController.getComponentSVG(attribute.key, index),
-                    height: 20,
-                    semanticsLabel: 'Your Fluttermoji',
-                    placeholderBuilder: (context) => Center(
-                      child: CupertinoActivityIndicator(),
+                  Positioned.fill(
+                    child: SvgPicture.string(
+                      fluttermojiController.getComponentSVG(
+                          attribute.key, index),
+                      height: 20,
+                      semanticsLabel: 'Your Fluttermoji',
+                      placeholderBuilder: (context) => Center(
+                        child: CupertinoActivityIndicator(),
+                      ),
                     ),
                   ),
                   if (!isOptionSelectable)
